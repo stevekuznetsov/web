@@ -1,0 +1,60 @@
+name: development
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Turso CLI
+        run: curl -sSfL https://get.tur.so/install.sh | bash
+      - name: Delete existing preview database
+        run: turso db destroy --yes payloadcms-dev
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+      - name: Create a new database for the preview
+        id: database
+        run: turso db create payloadcms-dev --wait
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+      - name: Record database connection URI
+        id: connection
+        run: echo "uri=$(turso db show payloadcms-dev --url)" >> "${GITHUB_OUTPUT}"
+        env:
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
+      - name: 🏗 Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: pnpm
+      - name: 📦 Install dependencies
+        run: pnpm ii
+        shell: bash
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Update database URI in Vercel
+        run: vercel env add DATABASE_URI preview main --sensitive <<<"${{ steps.connection.outputs.uri }}"
+      - name: Update bootstrap password in Vercel
+        run: vercel env add PAYLOAD_SEED_PASSWORD preview main --sensitive <<<"${{ secrets.PAYLOAD_SEED_PASSWORD }}"
+      - name: Build Project Artifacts
+        run: vercel build --yes --target=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        id: deployment
+        run: |
+          vercel deploy --yes --prebuilt --target=preview --token=${{ secrets.VERCEL_TOKEN }} > uri
+          echo "uri=$( cat uri )" >> "${GITHUB_OUTPUT}"
+      - name: Seed the deployment
+        run: |
+          curl -s -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST "${{ steps.deployment.outputs.uri }}/api/users/first-register" --data '{"email":"bootstrap@avy.com","password":"test","confirm-password":"test","name":"Bootstrap User"}' > login.json
+          curl -H "Authorization: Bearer $( jq --raw-output .token <login.json )" -X POST "${{ steps.deployment.outputs.uri }}/next/seed"
+

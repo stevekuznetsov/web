@@ -164,6 +164,7 @@ export interface Category {
   id: number;
   tenant: number | Tenant;
   title: string;
+  contentHash?: string | null;
   parent?: (number | null) | Category;
   breadcrumbs?:
     | {
@@ -193,6 +194,7 @@ export interface Tenant {
    * Used for url paths, example: /tenant-slug/page-slug
    */
   slug: string;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -219,6 +221,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -352,6 +355,7 @@ export interface Page {
   slug: string;
   slugLock?: boolean | null;
   tenant: number | Tenant;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -400,6 +404,7 @@ export interface Post {
     | null;
   slug: string;
   slugLock?: boolean | null;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -421,6 +426,7 @@ export interface User {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -440,6 +446,7 @@ export interface GlobalRoleAssignment {
   id: number;
   roles?: (number | Role)[] | null;
   user?: (number | null) | User;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -455,6 +462,7 @@ export interface Role {
     actions: ('*' | 'create' | 'read' | 'update' | 'delete')[];
     id?: string | null;
   }[];
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -467,6 +475,7 @@ export interface RoleAssignment {
   tenant: number | Tenant;
   roles?: (number | Role)[] | null;
   user?: (number | null) | User;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -493,6 +502,7 @@ export interface Biography {
   title?: string | null;
   start_date?: string | null;
   biography?: string | null;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -856,6 +866,7 @@ export interface Team {
   tenant: number | Tenant;
   name: string;
   members: (number | Biography)[];
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -869,6 +880,7 @@ export interface Brand {
   logo: number | Media;
   banner: number | Media;
   theme: number | Theme;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -887,6 +899,7 @@ export interface Theme {
     light: number | Palette;
     dark: number | Palette;
   };
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -922,6 +935,7 @@ export interface Palette {
   'chart-3': string;
   'chart-4': string;
   'chart-5': string;
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1429,6 +1443,7 @@ export interface Navigation {
       newTab?: boolean | null;
     };
   };
+  contentHash?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1641,6 +1656,7 @@ export interface PayloadMigration {
 export interface CategoriesSelect<T extends boolean = true> {
   tenant?: T;
   title?: T;
+  contentHash?: T;
   parent?: T;
   breadcrumbs?:
     | T
@@ -1661,6 +1677,7 @@ export interface MediaSelect<T extends boolean = true> {
   tenant?: T;
   alt?: T;
   caption?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1797,6 +1814,7 @@ export interface PagesSelect<T extends boolean = true> {
   slug?: T;
   slugLock?: T;
   tenant?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1934,6 +1952,7 @@ export interface PostsSelect<T extends boolean = true> {
       };
   slug?: T;
   slugLock?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1946,6 +1965,7 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T;
   globalRoles?: T;
   roles?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -1969,6 +1989,7 @@ export interface TenantsSelect<T extends boolean = true> {
         id?: T;
       };
   slug?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1985,6 +2006,7 @@ export interface RolesSelect<T extends boolean = true> {
         actions?: T;
         id?: T;
       };
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1996,6 +2018,7 @@ export interface RoleAssignmentsSelect<T extends boolean = true> {
   tenant?: T;
   roles?: T;
   user?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2006,6 +2029,7 @@ export interface RoleAssignmentsSelect<T extends boolean = true> {
 export interface GlobalRoleAssignmentsSelect<T extends boolean = true> {
   roles?: T;
   user?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2018,6 +2042,7 @@ export interface BrandsSelect<T extends boolean = true> {
   logo?: T;
   banner?: T;
   theme?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2039,6 +2064,7 @@ export interface ThemesSelect<T extends boolean = true> {
         light?: T;
         dark?: T;
       };
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2073,6 +2099,7 @@ export interface PalettesSelect<T extends boolean = true> {
   'chart-3'?: T;
   'chart-4'?: T;
   'chart-5'?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2428,6 +2455,7 @@ export interface NavigationsSelect<T extends boolean = true> {
               newTab?: T;
             };
       };
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -2444,6 +2472,7 @@ export interface BiographiesSelect<T extends boolean = true> {
   title?: T;
   start_date?: T;
   biography?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2455,6 +2484,7 @@ export interface TeamsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
   members?: T;
+  contentHash?: T;
   updatedAt?: T;
   createdAt?: T;
 }

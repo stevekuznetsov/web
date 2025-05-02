@@ -32,6 +32,7 @@ done
 echo "[INFO] Creating the bootstrap user and seeding the database..."
 curl -s -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST http://localhost:3000/api/users/first-register --data '{"email":"bootstrap@avy.com","password":"test","confirm-password":"test","name":"Bootstrap User"}' > login.json
 curl -H "Authorization: Bearer $( jq --raw-output .token <login.json )" -X POST http://localhost:3000/next/seed
+sleep 30
 
 echo "[INFO] Stopping the development server..."
 set +o errexit
